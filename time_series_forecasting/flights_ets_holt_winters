@@ -1,0 +1,87 @@
+# ETS model using scikit learn flights dataset
+
+# Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+from sklearn.metrics import mean_squared_error
+
+# Load the Air Passenger dataset
+from statsmodels.datasets import get_rdataset
+dataset = get_rdataset("AirPassengers", "datasets")
+data = dataset.data
+
+# Prepare the data
+data['Month'] = pd.date_range(start="1949-01", periods=len(data), freq='M')  # Create datetime column
+data.set_index('Month', inplace=True)
+data.rename(columns={'value': 'Passengers'}, inplace=True)
+
+# ===== EDA =====
+
+# Visualize the time series
+plt.figure(figsize=(12, 6))
+plt.plot(data.index, data['Passengers'], label='Passengers', color='blue')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.title('Air Passenger Numbers Over Time')
+plt.legend()
+plt.show()
+
+# Check for seasonality, trend, and residuals
+decomposition = seasonal_decompose(data['Passengers'], model='multiplicative', period=12)
+decomposition.plot()
+plt.show()
+
+# Check descriptive statistics
+print("Descriptive Statistics:\n", data['Passengers'].describe())
+
+# Check autocorrelation and partial autocorrelation
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+plot_acf(data['Passengers'], lags=30, title='Autocorrelation')
+plot_pacf(data['Passengers'], lags=30, title='Partial Autocorrelation')
+plt.show()
+
+# ===== Split Data =====
+train_size = int(0.8 * len(data))
+train, test = data.iloc[:train_size], data.iloc[train_size:]
+
+# ===== Fit the ETS Model =====
+ets_model = ExponentialSmoothing(
+    train['Passengers'], 
+    trend='add',       # Choose 'add' for additive trend or 'mul' for multiplicative
+    seasonal='mul',    # Choose 'add' or 'mul' based on your data's seasonality
+    seasonal_periods=12  # Monthly data, so seasonal period is 12
+).fit()
+
+# Print model parameters
+print("Model Parameters:")
+print(ets_model.params)
+
+# Forecast for the test period and beyond
+forecast_steps = len(test) + 12  # Extend 12 months beyond the dataset
+forecast = ets_model.forecast(steps=forecast_steps)
+
+# Generate future dates
+future_dates = pd.date_range(start=test.index[-1] + pd.Timedelta(days=30), periods=12, freq='M')
+
+# Combine actual data, test forecasts, and future forecasts
+forecast_series = pd.Series(forecast, index=pd.date_range(start=train.index[-1] + pd.Timedelta(days=30), periods=forecast_steps, freq='M'))
+
+# Evaluate the model on the test set
+test_forecast = forecast_series[:len(test)]
+mse = mean_squared_error(test['Passengers'], test_forecast)
+print("Mean Squared Error on Test Set:", mse)
+
+# ===== Visualize the Forecast =====
+plt.figure(figsize=(12, 6))
+plt.plot(data.index, data['Passengers'], label='Actual', color='blue')
+plt.plot(test.index, test_forecast, label='Test Forecast', color='orange')
+plt.plot(future_dates, forecast_series[len(test):], label='Future Forecast', color='green')
+plt.axvline(train.index[-1], color='red', linestyle='--', label='Train-Test Split')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.title('ETS Model: Forecasting Beyond Dataset')
+plt.legend()
+plt.show()
