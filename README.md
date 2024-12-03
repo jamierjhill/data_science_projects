@@ -5,7 +5,7 @@ Welcome to my Data Science Portfolio! Below is a categorized list of data scienc
 
 1. Supervised Learning
 Predict outcomes using labeled datasets.
-Example Project: Energy Forecaster [(https://github.com/jamierjhill/data_science_projects/blob/f7a338f6c35a6b68b00a5a7b1e84ee822aa263a0/supervised_learning/energy_forecaster/energy_forecasting.ipynb)](url)
+Example Project: Energy Forecaster ((https://github.com/jamierjhill/data_science_projects/blob/f7a338f6c35a6b68b00a5a7b1e84ee822aa263a0/supervised_learning/energy_forecaster/energy_forecasting.ipynb))
 
 2. Unsupervised Learning
 Identify patterns and groupings in unlabeled data.
