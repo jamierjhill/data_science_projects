@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
 
 # Load the Air Passenger dataset
 from statsmodels.datasets import get_rdataset
@@ -19,6 +19,7 @@ data.set_index('Month', inplace=True)
 data.rename(columns={'value': 'Passengers'}, inplace=True)
 
 # ===== EDA =====
+data.describe()
 
 # Visualize the time series
 plt.figure(figsize=(12, 6))
@@ -37,12 +38,6 @@ plt.show()
 # Check descriptive statistics
 print("Descriptive Statistics:\n", data['Passengers'].describe())
 
-# Check autocorrelation and partial autocorrelation
-from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
-plot_acf(data['Passengers'], lags=30, title='Autocorrelation')
-plot_pacf(data['Passengers'], lags=30, title='Partial Autocorrelation')
-plt.show()
-
 # ===== Split Data =====
 train_size = int(0.8 * len(data))
 train, test = data.iloc[:train_size], data.iloc[train_size:]
@@ -50,7 +45,7 @@ train, test = data.iloc[:train_size], data.iloc[train_size:]
 # ===== Fit the ETS Model =====
 ets_model = ExponentialSmoothing(
     train['Passengers'], 
-    trend='add',       # Choose 'add' for additive trend or 'mul' for multiplicative
+    trend='mul',       # Choose 'add' for additive trend or 'mul' for multiplicative
     seasonal='mul',    # Choose 'add' or 'mul' based on your data's seasonality
     seasonal_periods=12  # Monthly data, so seasonal period is 12
 ).fit()
@@ -71,8 +66,8 @@ forecast_series = pd.Series(forecast, index=pd.date_range(start=train.index[-1] 
 
 # Evaluate the model on the test set
 test_forecast = forecast_series[:len(test)]
-mse = mean_squared_error(test['Passengers'], test_forecast)
-print("Mean Squared Error on Test Set:", mse)
+mae = mean_absolute_error(test['Passengers'], test_forecast)
+print("Mean Absolute Error on Test Set:", mae)
 
 # ===== Visualize the Forecast =====
 plt.figure(figsize=(12, 6))
