@@ -1,3 +1,5 @@
+# Performing EDA on the titanic dataset
+
 # Import libraries
 import seaborn as sns
 import pandas as pd
@@ -100,20 +102,19 @@ plt.ylabel('Survived (0 = No, 1 = Yes)')
 plt.grid(True)
 plt.show()
 
-
 #Correlation matrix between all numerical values
 # Select only numeric columns for correlation analysis
 numeric_data = titanic.select_dtypes(include='number')
 
-# Step 3: Calculate the correlation matrix
+# Calculate the correlation matrix
 correlation_matrix = numeric_data.corr()
 
-# Step 4: Visualize the correlation matrix
+# Visualize the correlation matrix
 plt.figure(figsize=(8, 6))
 sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
 plt.title('Correlation Matrix for Titanic Dataset')
 plt.show()
 
-# Step 5: Print the correlation matrix
+# Print the correlation matrix
 print("Correlation Matrix:")
 print(correlation_matrix)
