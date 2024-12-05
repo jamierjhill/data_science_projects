@@ -1,0 +1,119 @@
+# Import libraries
+import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load Titanic dataset from seaborn
+titanic = sns.load_dataset('titanic')
+
+# Display the first few rows
+print(titanic.head())
+
+# Display the first few rows
+print(titanic.head())
+
+# Check data types, null values, and non-null counts
+print(titanic.info())
+
+# Summary statistics for numeric columns
+print(titanic.describe())
+
+# Check the number of missing values per column
+print(titanic.isnull().sum())
+
+# drop rows with missing values or fill them
+titanic_cleaned = titanic.dropna()
+print(f"Shape after dropping missing values: {titanic_cleaned.shape}")
+
+# Countplot for the 'survived' column
+sns.countplot(data=titanic, x='survived', palette='viridis')
+plt.title('Survival Count')
+plt.xlabel('Survived (0 = No, 1 = Yes)')
+plt.ylabel('Count')
+plt.show()
+
+# Survival percentage
+survival_rate = titanic['survived'].mean() * 100
+print(f"Survival Rate: {survival_rate:.2f}%")
+
+# Histogram for age
+plt.figure(figsize=(8, 6))
+sns.histplot(titanic['age'], bins=30, kde=True, color='blue')
+plt.title('Age Distribution')
+plt.xlabel('Age')
+plt.ylabel('Frequency')
+plt.show()
+
+# Countplot for passenger class
+sns.countplot(data=titanic, x='pclass', palette='mako')
+plt.title('Passenger Class Distribution')
+plt.xlabel('Class')
+plt.ylabel('Count')
+plt.show()
+
+# Grouped bar plot for survival by gender
+sns.countplot(data=titanic, x='sex', hue='survived', palette='viridis')
+plt.title('Survival by Gender')
+plt.xlabel('Gender')
+plt.ylabel('Count')
+plt.legend(title='Survived', loc='upper right', labels=['No', 'Yes'])
+plt.show()
+
+# Calculate survival rate by gender
+gender_survival = titanic.groupby('sex')['survived'].mean() * 100
+print("Survival Rate by Gender:")
+print(gender_survival)
+
+# Grouped bar plot for survival by passenger class
+sns.countplot(data=titanic, x='pclass', hue='survived', palette='mako')
+plt.title('Survival by Passenger Class')
+plt.xlabel('Passenger Class')
+plt.ylabel('Count')
+plt.legend(title='Survived', loc='upper right', labels=['No', 'Yes'])
+plt.show()
+
+# Calculate survival rate by class
+class_survival = titanic.groupby('pclass')['survived'].mean() * 100
+print("Survival Rate by Passenger Class:")
+print(class_survival)
+
+# Scatter plot of survival vs. age
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=titanic, x='age', y='survived', hue='pclass', palette='viridis')
+plt.title('Survival by Age and Passenger Class')
+plt.xlabel('Age')
+plt.ylabel('Survived (0 = No, 1 = Yes)')
+plt.legend(title='Passenger Class')
+plt.show()
+
+# Correlation analysis
+# Calculate the Pearson correlation coefficient between 2 varables
+correlation = titanic_cleaned['age'].corr(titanic_cleaned['survived'])
+print(f"Correlation between Age and Survived: {correlation:.2f}")
+
+# Visualize the relationship with a scatter plot and a trend line
+plt.figure(figsize=(8, 6))
+sns.regplot(data=titanic_cleaned, x='age', y='survived', scatter_kws={'color':'blue', 'alpha':0.5}, line_kws={'color':'red', 'lw':2})
+plt.title(f'Age vs Survival with Trend Line (Correlation: {correlation:.2f})')
+plt.xlabel('Age')
+plt.ylabel('Survived (0 = No, 1 = Yes)')
+plt.grid(True)
+plt.show()
+
+
+#Correlation matrix between all numerical values
+# Select only numeric columns for correlation analysis
+numeric_data = titanic.select_dtypes(include='number')
+
+# Step 3: Calculate the correlation matrix
+correlation_matrix = numeric_data.corr()
+
+# Step 4: Visualize the correlation matrix
+plt.figure(figsize=(8, 6))
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
+plt.title('Correlation Matrix for Titanic Dataset')
+plt.show()
+
+# Step 5: Print the correlation matrix
+print("Correlation Matrix:")
+print(correlation_matrix)
