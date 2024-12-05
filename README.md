@@ -15,3 +15,4 @@ Welcome to my Data Science Portfolio! Below is a categorized list of data scienc
 7. Reinforcement Learning - Train models to make decisions by interacting with their environment.
 
 8. Exploratory Data Analysis (EDA) - Explore, visualize, and summarize data to uncover insights.
+   Examples: EDA on titanic dataset
